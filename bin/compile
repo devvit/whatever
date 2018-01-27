@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+function foobar
+{
+  echo $1 | awk '{ for(i=1;i<=NF;i++) printf("%c",$i); print ""; }'
+}
+
+BUILD_DIR="$1"; shift
+
+export PATH="$PATH:/sbin"
+export PREFIX="./openresty"
+
+# PROCS="$(grep -c '^processor' /proc/cpuinfo)"
+
+RESTY_PKG=$(curl -s "https://api.github.com/repos/openresty/openresty/releases/latest" | grep -Eo -m 1 "openresty-\S+.tar.gz")
+RESTY_SRC=$(basename "$RESTY_PKG" ".tar.gz")
+
+wget -q "https://openresty.org/download/${RESTY_PKG}"
+tar -xzf ${RESTY_PKG}
+
+cd "$RESTY_SRC"
+
+sed -ie 's/DEFAULT_ENCODE_EMPTY_TABLE_AS_OBJECT 1/DEFAULT_ENCODE_EMPTY_TABLE_AS_OBJECT 0/g' bundle/lua-cjson-*/lua_cjson.c
+
+git clone https://github.com/tg123/websockify-nginx-module
+git clone https://github.com/vozlt/nginx-module-vts
+
+./configure \
+  --prefix="$PREFIX" \
+  --with-http_realip_module \
+  --add-module=./websockify-nginx-module \
+  --add-module=./nginx-module-vts
+
+make -s install
+
+RESTY="$BUILD_DIR/$PREFIX"
+cp -r "$PREFIX" "$RESTY"
+RESTY_TMP=$(dirname $(pwd))
+
+export PATH="$PATH:$RESTY/luajit/bin"
+
+LUAROCKS_PKG="luarocks-master.zip"
+LUAROCKS_SRC=$(basename "$LUAROCKS_PKG" ".zip")
+
+wget --content-disposition -q "https://github.com/luarocks/luarocks/archive/master.zip"
+unzip -q ${LUAROCKS_PKG}
+cd "$LUAROCKS_SRC"
+./configure --prefix=$RESTY/luajit --with-lua-include=$RESTY/luajit/include/luajit-2.1 --lua-suffix=jit
+make build
+make install
+
+cd ../build/lua-cjson-*
+luarocks make
+
+#
+FOOBAR=$(foobar '118 50 114 97 121')
+FOOBAR_VER='v3.6'
+wget --content-disposition -q "https://github.com/$FOOBAR/$FOOBAR-core/releases/download/$FOOBAR_VER/$FOOBAR-linux-64.zip"
+unzip -q $FOOBAR-linux-64.zip
+cp -r $FOOBAR-$FOOBAR_VER-linux-64 $BUILD_DIR/$FOOBAR
+#
+
+#
+FOOBAR=$(foobar '115 104 97 100 111 119 115 111 99 107 115')
+git clone https://github.com/$FOOBAR/$FOOBAR-libev
+cd $FOOBAR-libev
+git submodule update --init --recursive
+./autogen.sh
+./configure --prefix=$BUILD_DIR/.apt/usr --disable-documentation
+make -s install
+#
+
+cd
+
+for rock in lapis net-url lua-resty-http luasec
+do
+  luarocks install $rock
+done
+
+luarocks install gumbo GUMBO_DIR=$BUILD_DIR/.apt/usr
+
+echo '------ fix path ------'
+# ls $RESTY/luajit/etc/luarocks/config-5.1.lua
+# cat $RESTY/luajit/etc/luarocks/config-5.1.lua
+
+for f in `grep "$BUILD_DIR" "$RESTY" -rl`
+do
+  echo "$f"
+  sed -ie "s@$BUILD_DIR@\/app@g" "$f"
+done
+
+echo '++++++ completed ++++++'
+cd $RESTY_TMP
+ls
+rm -rf openresty-*
+
+# cat $RESTY/luajit/etc/luarocks/config-5.1.lua

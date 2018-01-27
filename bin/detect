@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo 'Openresty'
+exit 0
