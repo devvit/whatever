@@ -58,6 +58,7 @@ FOOBAR_VER='v3.11'
 wget --content-disposition -q "https://github.com/$FOOBAR/$FOOBAR-core/releases/download/$FOOBAR_VER/$FOOBAR-linux-64.zip"
 unzip -q $FOOBAR-linux-64.zip
 cp -r $FOOBAR-$FOOBAR_VER-linux-64 $BUILD_DIR/$FOOBAR
+chmod 755 $BUILD_DIR/$FOOBAR/$FOOBAR
 #
 
 #
