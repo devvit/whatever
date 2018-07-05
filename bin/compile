@@ -59,17 +59,18 @@ FOOBAR_VER='v3.28'
 wget --content-disposition -q "https://github.com/$FOOBAR/$FOOBAR-core/releases/download/$FOOBAR_VER/$FOOBAR-linux-64.zip"
 unzip -q $FOOBAR-linux-64.zip
 cp -r $FOOBAR-$FOOBAR_VER-linux-64 $BUILD_DIR/$FOOBAR
-ln -sf $BUILD_DIR/$FOOBAR/$FOOBAR $BUILD_DIR/hhvm
+cd $BUILD_DIR
+ln -sf $FOOBAR/$FOOBAR hhvm
 #
 
 #
-FOOBAR=$(foobar '115 104 97 100 111 119 115 111 99 107 115')
-git clone https://github.com/$FOOBAR/$FOOBAR-libev
-cd $FOOBAR-libev
-git submodule update --init --recursive
-./autogen.sh
-./configure --prefix=$BUILD_DIR/.apt/usr --disable-documentation
-make -s install
+# FOOBAR=$(foobar '115 104 97 100 111 119 115 111 99 107 115')
+# git clone https://github.com/$FOOBAR/$FOOBAR-libev
+# cd $FOOBAR-libev
+# git submodule update --init --recursive
+# ./autogen.sh
+# ./configure --prefix=$BUILD_DIR/.apt/usr --disable-documentation
+# make -s install
 #
 
 cd
