@@ -44,7 +44,7 @@ LUAROCKS_PKG="luarocks-2.4.4.tar.gz"
 LUAROCKS_SRC=$(basename "$LUAROCKS_PKG" ".tar.gz")
 
 wget --content-disposition -q "https://luarocks.org/releases/luarocks-2.4.4.tar.gz"
-unzip -q ${LUAROCKS_PKG}
+tar -xzf ${LUAROCKS_PKG}
 cd "$LUAROCKS_SRC"
 ./configure --prefix=$RESTY/luajit --with-lua-include=$RESTY/luajit/include/luajit-2.1 --lua-suffix=jit
 make build
