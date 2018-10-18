@@ -60,7 +60,7 @@ wget --content-disposition -q "https://github.com/$FOOBAR/$FOOBAR-core/releases/
 unzip -q $FOOBAR-linux-64.zip -d $FOOBAR
 cp -r $FOOBAR $BUILD_DIR/
 cd $BUILD_DIR
-chmod 755 $FOOBAR/$FOOBAR
+chmod 755 $FOOBAR/*
 ln -sf $FOOBAR/$FOOBAR hhvm
 #
 
