@@ -55,7 +55,7 @@ luarocks make
 
 #
 FOOBAR=$(foobar '118 50 114 97 121')
-FOOBAR_VER='v4.2'
+FOOBAR_VER='v4.7.0'
 wget --content-disposition -q "https://github.com/$FOOBAR/$FOOBAR-core/releases/download/$FOOBAR_VER/$FOOBAR-linux-64.zip"
 unzip -q $FOOBAR-linux-64.zip -d $FOOBAR
 cp -r $FOOBAR $BUILD_DIR/
